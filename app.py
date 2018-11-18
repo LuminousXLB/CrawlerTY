@@ -1,11 +1,14 @@
 import json
+import logging
 import re
+import time
 from collections import OrderedDict
 from urllib import parse
+
 import demjson
 import requests
 from bs4 import BeautifulSoup
-import logging
+
 from utils import getLogger
 
 logger = getLogger('crawler', logging.INFO)
@@ -14,7 +17,9 @@ session.headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Apple
 
 
 def getSoup(url):
+    time.sleep(0.1)
     rsp = session.get(url)
+    logger.info('return {} from {} {}'.format(rsp.status_code, rsp.request.method, rsp.url))
     if rsp.status_code == 200:
         return BeautifulSoup(rsp.content, 'lxml'), rsp
     else:
@@ -26,14 +31,21 @@ def urlFactory(blockid, postid, page):
 
 
 def fetchRewardInfo(bbsGlobal):
-    rsp = session.post('http://bbs.tianya.cn/api', {
+
+    form = {
         "method": "bbs.api.getArticleDashangInfo",
         "params.item": bbsGlobal['item'],
         "params.articleId": bbsGlobal['artId'],
         "params.rewardIds": bbsGlobal['tyfen_rewardIds'],
         "params.tyfIds": bbsGlobal['tyfen_tyfIds'],
         "params.shangIds": bbsGlobal['shangIds']
-    })
+    }
+
+    if bbsGlobal['tyfen_rewardIds'][0] != '0':
+        form['params.rewardIds'] = '0,' + form['params.rewardIds']
+        form['params.tyfIds'] = '0,' + form['params.tyfIds']
+
+    rsp = session.post('http://bbs.tianya.cn/api', form)
 
     data = json.loads(rsp.content)['data']
     ret = {}
@@ -51,10 +63,12 @@ def bbsContentLength(soup):
     return len(soup.find('div', {'class': 'bbs-content'}).prettify())
 
 
-def parseBBSGlobal(script):
-    reg = re.compile(r'var adsGlobal [\s\S]*', re.RegexFlag.MULTILINE)
-    bbsGlobal = re.sub(reg, '', script.text).replace('var bbsGlobal =', '').replace(';', '').strip()
-    return demjson.decode(bbsGlobal)
+def parseBBSGlobal(script_list):
+    for script in script_list:
+        if script.text.find('bbsGlobal') > -1:
+            reg = re.compile(r'var adsGlobal [\s\S]*', re.RegexFlag.MULTILINE)
+            bbsGlobal = re.sub(reg, '', script.text).replace('var bbsGlobal =', '').replace(';', '').strip()
+            return demjson.decode(bbsGlobal)
 
 
 def parseHeader(post_head):
@@ -115,7 +129,8 @@ def parseReplys(atl_item_iter, rewards, bbsGlobal):
     for atl_item in atl_item_iter:
         atl = parseReplyItem(atl_item)
 
-        key = '-'.join([bbsGlobal['item'], str(bbsGlobal['artId']), atl['replyid']])
+        key = '-'.join([bbsGlobal['item'],
+                        str(bbsGlobal['artId']), atl['replyid']])
         if rewards != None:
             reward = rewards.get(key) or {'upCount': '', 'totalScore': ''}
             atl.update(reward)
@@ -126,35 +141,42 @@ def parseReplys(atl_item_iter, rewards, bbsGlobal):
 
 
 def handleFirstPage(soup):
-    bbsGlobal = parseBBSGlobal(soup.find('script'))
+    bbsGlobal = parseBBSGlobal(soup.findAll('script'))
     logger.info('block_{item} article_{artId} page_{page}'.format_map(bbsGlobal))
 
-    meta = OrderedDict()
-
-    # 解析主帖信息
-    meta.update(parseHeader(soup.find('div', id='post_head')))
-    meta.update(parseHostItem(soup.find('div', {'class': 'atl-main'})))
-
-    if bbsGlobal['tyfen_rewardIds'] != '':
-        rewards = fetchRewardInfo(bbsGlobal)
-        mainkey = '-'.join([meta['blockid'], meta['postid']])
-        meta.update(rewards[mainkey])
+    if bbsGlobal['isWenda'] or bbsGlobal['subType'] == '本版隐藏':
+        return None, bbsGlobal
     else:
-        rewards = None
+        meta = OrderedDict()
 
-    # 解析回复信息
-    atl_item_iter = iter(soup.findAll('div', {'class': 'atl-item'}))
-    next(atl_item_iter)  # 跳过第一个
-    meta['replys'] = parseReplys(atl_item_iter, rewards, bbsGlobal)
+        # 解析主帖信息
+        meta.update(parseHeader(soup.find('div', id='post_head')))
+        meta.update(parseHostItem(soup.find('div', {'class': 'atl-main'})))
+        meta['subType'] = bbsGlobal['subType']
 
-    return meta, bbsGlobal
+        if bbsGlobal['tyfen_rewardIds'] != '':
+            rewards = fetchRewardInfo(bbsGlobal)
+            mainkey = '-'.join([meta['blockid'], meta['postid']])
+            meta.update(rewards[mainkey])
+        else:
+            rewards = None
+
+        # 解析回复信息
+        atl_item_iter = iter(soup.findAll('div', {'class': 'atl-item'}))
+        next(atl_item_iter)  # 跳过第一个
+        meta['replys'] = parseReplys(atl_item_iter, rewards, bbsGlobal)
+        return meta, bbsGlobal
 
 
 def handleFollowingPage(soup):
-    bbsGlobal = parseBBSGlobal(soup.find('script'))
+    bbsGlobal = parseBBSGlobal(soup.findAll('script'))
     logger.info('block_{item} article_{artId} page_{page}'.format_map(bbsGlobal))
 
-    rewards = fetchRewardInfo(bbsGlobal)
+    if bbsGlobal['tyfen_rewardIds'] != '':
+        rewards = fetchRewardInfo(bbsGlobal)
+    else:
+        rewards = None
+
     atl_item_iter = iter(soup.findAll('div', {'class': 'atl-item'}))
 
     return parseReplys(atl_item_iter, rewards, bbsGlobal)
@@ -164,25 +186,48 @@ def handlePost(blockid, postid):
     soup, rsp = getSoup(urlFactory(blockid, postid, 1))
     if soup == None:
         logger.warning('{} {} {}'.format(rsp.status_code, rsp.request.method, rsp.url))
+        return None
 
     meta, bbsGlobal = handleFirstPage(soup)
+
+    if meta == None:
+        logger.warning('Got subtype with {}'.format(bbsGlobal['subType']))
+        return None
 
     pageCount = bbsGlobal['pageCount']
 
     if pageCount != 1:
         for page in range(2, pageCount+1):
-            soup = getSoup(urlFactory(blockid, postid, page))
-            meta['replys'] += handleFollowingPage(soup)
+            soup, rsp = getSoup(urlFactory(blockid, postid, page))
+            if rsp.status_code == 200:
+                meta['replys'] += handleFollowingPage(soup)
 
     return meta
 
 
-def wrapper(blockid, postid):
-    meta = handlePost(blockid, postid)
-    with open('data/{}_{}.json'.format(blockid, postid), 'w') as f:
-        json.dump(meta, f)
+def wrapper(blockid, postid, times=0):
+    try:
+        meta = handlePost(blockid, postid)
+        if meta != None:
+            with open('data/{}_{}.json'.format(blockid, postid), 'w') as f:
+                json.dump(meta, f)
+    except requests.exceptions.ConnectionError as err:
+        logger.error(err.strerror)
+        if times < 3:
+            time.sleep(1+3*times)
+            return wrapper(blockid, postid, times+1)
+        else:
+            raise
 
 
 if __name__ == "__main__":
-    for page in range(8789,33150):
+    # wrapper('1179', 9176)
+    # for page in range(8789, 33150):
+    for page in range(11421, 12000):
         wrapper('1179', page)
+
+    # for page in range(20000, 30000):
+    #     wrapper('1179', page)
+
+    # for page in range(30000, 33150):
+    #     wrapper('1179', page)
