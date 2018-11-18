@@ -66,7 +66,7 @@ def bbsContentLength(soup):
 def parseBBSGlobal(script_list):
     for script in script_list:
         if script.text.find('bbsGlobal') > -1:
-            reg = re.compile(r'var adsGlobal [\s\S]*', re.RegexFlag.MULTILINE)
+            reg = re.compile(r'var adsGlobal [\s\S]*', re.M)
             bbsGlobal = re.sub(reg, '', script.text).replace('var bbsGlobal =', '').replace(';', '').strip()
             return demjson.decode(bbsGlobal)
 
