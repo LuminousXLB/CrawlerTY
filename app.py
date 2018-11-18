@@ -47,7 +47,7 @@ def fetchRewardInfo(bbsGlobal):
 
     rsp = session.post('http://bbs.tianya.cn/api', form)
 
-    data = json.loads(rsp.content)['data']
+    data = json.loads(rsp.text)['data']
     ret = {}
 
     for item in data['tyf']:
