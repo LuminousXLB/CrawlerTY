@@ -20,16 +20,7 @@ def wrapper(blockid, postid, times=0):
 
 
 if __name__ == "__main__":
-    # wrapper('1179', 9176)
-    # for page in range(8789, 33150):
-    # for page in range(20000, 28000):
-        # wrapper('1179', page)
+    # wrapper('funinfo', 7666312)
+    for page in range(7666312, 7690312):
+        wrapper('funinfo', page)
 
-    for page in range(29750, 29752):
-        wrapper('1179', page)
-
-    # for page in range(20000, 24000):
-    #     wrapper('1179', page)
-
-    # for page in range(12000, 20000):
-    #     wrapper('1179', page)
