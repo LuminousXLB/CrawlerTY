@@ -1,0 +1,39 @@
+{
+  "blockid": "1179",
+  "postid": "54514",
+  "activityuserid": "135059315",
+  "posttime": "1539997793000",
+  "replycount": "3",
+  "clickcount": "25",
+  "length": 497,
+  "remarkcount": "3",
+  "imgcount": "1",
+  "replys": [
+    {
+      "replyid": "1442894",
+      "hostid": "135059315",
+      "resttime": "2018-10-20 09:13:34",
+      "length": 292,
+      "upCount": 2,
+      "totalScore": 92.93
+    },
+    {
+      "replyid": "1442899",
+      "hostid": "135059315",
+      "resttime": "2018-10-20 09:13:53",
+      "length": 409,
+      "upCount": 2,
+      "totalScore": 92.93
+    },
+    {
+      "replyid": "1442960",
+      "hostid": "137089812",
+      "resttime": "2018-10-20 09:17:14",
+      "length": 42,
+      "upCount": 2,
+      "totalScore": 92.93
+    }
+  ],
+  "upCount": 4,
+  "totalScore": 108.33
+}
