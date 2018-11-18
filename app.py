@@ -169,12 +169,20 @@ def handlePost(blockid, postid):
 
     pageCount = bbsGlobal['pageCount']
 
-    if pageCount == 1:
-        return meta
-    else:
+    if pageCount != 1:
         for page in range(2, pageCount+1):
             soup = getSoup(urlFactory(blockid, postid, page))
             meta['replys'] += handleFollowingPage(soup)
 
+    return meta
 
-meta = handlePost('1179', 8789)
+
+def wrapper(blockid, postid):
+    meta = handlePost(blockid, postid)
+    with open('data/{}_{}.json'.format(blockid, postid), 'w') as f:
+        json.dump(meta, f)
+
+
+if __name__ == "__main__":
+    for page in range(8789,33150):
+        wrapper('1179', page)
