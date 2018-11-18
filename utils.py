@@ -2,19 +2,18 @@ import logging
 
 logging.basicConfig(level=logging.DEBUG,
                     format='[%(asctime)s] %(levelname)-8s| %(name)s: %(message)s',
-                    datefmt='%Y-%m-%d %H:%M:%S')
-#                     ,
-#                     filename='myapp.log',
-#                     filemode='a')
+                    datefmt='%Y-%m-%d %H:%M:%S',
+                    filename='myapp.log',
+                    filemode='a')
 
-# console = logging.StreamHandler()
-# console.setLevel(logging.DEBUG)
-# console.setFormatter(logging.Formatter(
-#     '[%(asctime)s] %(levelname)-8s| %(name)s: %(message)s',
-#     datefmt='%Y-%m-%d %H:%M:%S'
-# ))
+console = logging.StreamHandler()
+console.setLevel(logging.DEBUG)
+console.setFormatter(logging.Formatter(
+    '[%(asctime)s] %(levelname)-8s| %(name)s: %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+))
 
-# logging.getLogger('').addHandler(console)
+logging.getLogger('').addHandler(console)
 
 
 def getLogger(name, level=logging.NOTSET):
