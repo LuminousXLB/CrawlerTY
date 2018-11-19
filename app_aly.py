@@ -20,7 +20,6 @@ def wrapper(blockid, postid, times=0):
 
 
 if __name__ == "__main__":
-    # wrapper('funinfo', 7684680)
-    # for page in range(7666312, 7690312):
-    for page in range(7684680, 7690312):
-        wrapper('funinfo', page)
+    # wrapper('develop', 2303712)
+    for page in range(2303712, 2354900):
+        wrapper('develop', page)
