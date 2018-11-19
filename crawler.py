@@ -56,7 +56,7 @@ def fetchRewardInfo(bbsGlobal):
     for item in data['reward']:
         ret[item['merNum']]['totalScore'] = item['totalScore']
 
-    return ret
+    return ret, rsp
 
 
 def bbsContentLength(soup):
@@ -155,7 +155,7 @@ def handleFirstPage(soup):
         meta['subType'] = bbsGlobal['subType']
 
         if bbsGlobal['tyfen_rewardIds'] != '':
-            rewards = fetchRewardInfo(bbsGlobal)
+            rewards, rsp = fetchRewardInfo(bbsGlobal)
             mainkey = '-'.join([meta['blockid'], meta['postid']])
             meta.update(rewards[mainkey])
         else:
@@ -173,7 +173,7 @@ def handleFollowingPage(soup):
     logger.info('block_{item} article_{artId} page_{page}'.format_map(bbsGlobal))
 
     if bbsGlobal['tyfen_rewardIds'] != '':
-        rewards = fetchRewardInfo(bbsGlobal)
+        rewards, rsp = fetchRewardInfo(bbsGlobal)
     else:
         rewards = None
 
