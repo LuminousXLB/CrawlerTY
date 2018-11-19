@@ -48,10 +48,12 @@ def fetchRewardInfo(bbsGlobal):
     rsp = session.post('http://bbs.tianya.cn/api', form)
     rjson = json.loads(rsp.text)
 
-    if 'data' not in rjson:
-        logger.error('Key <data> not found')
-        logger.error(form)
-        logger.error(rjson)
+    if 'error_msg' in rjson:
+        logger.warning(rjson)
+        logger.warning(form)
+        time.sleep(0.5)
+        rsp = session.post('http://bbs.tianya.cn/api', form)
+        rjson = json.loads(rsp.text)
 
     data = rjson['data']
     ret = {}
