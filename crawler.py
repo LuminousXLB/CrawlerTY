@@ -188,6 +188,11 @@ def handlePost(blockid, postid):
         logger.warning('{} {} {}'.format(rsp.status_code, rsp.request.method, rsp.url))
         return None
 
+    err = soup.find('div', {'id': 'main', 'class': 'error'})
+    if err:
+        logger.warning('Got error: {}'.format(err.find('h2').text))
+        return None
+
     meta, bbsGlobal = handleFirstPage(soup)
 
     if meta == None:
