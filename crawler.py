@@ -46,8 +46,14 @@ def fetchRewardInfo(bbsGlobal):
         form['params.tyfIds'] = '0,' + form['params.tyfIds']
 
     rsp = session.post('http://bbs.tianya.cn/api', form)
+    rjson = json.loads(rsp.text)
 
-    data = json.loads(rsp.text)['data']
+    if 'data' not in rjson:
+        logger.error('Key <data> not found')
+        logger.error(form)
+        logger.error(rjson)
+
+    data = rjson['data']
     ret = {}
 
     for item in data['tyf']:
