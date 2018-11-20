@@ -1,7 +1,7 @@
 from crawler import handlePost, logger
 import json
 import time
-from requests.exceptions import ConnectionError
+from requests.exceptions import ConnectionError, ChunkedEncodingError
 
 
 def wrapper(blockid, postid, times=0):
@@ -10,7 +10,7 @@ def wrapper(blockid, postid, times=0):
         if meta != None:
             with open('data/{}_{}.json'.format(blockid, postid), 'w') as f:
                 json.dump(meta, f)
-    except ConnectionError as err:
+    except (ConnectionError, ChunkedEncodingError) as err:
         logger.error(err.strerror)
         if times < 3:
             time.sleep(1+3*times)
