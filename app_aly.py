@@ -20,6 +20,6 @@ def wrapper(blockid, postid, times=0):
 
 
 if __name__ == "__main__":
-    # wrapper('free', 5935880)
-    for page in range(5963049, 5970217):
-        wrapper('free', page)
+    # wrapper('worldlook', 1849538)
+    for page in range(1849538, 1859167):
+        wrapper('worldlook', page)
