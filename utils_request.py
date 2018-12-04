@@ -22,7 +22,9 @@ def lauchRequest(req_func, ret_func, sleep_time):
         rsp = req_func(*args)
 
         logger.debug('Return {} from {} {}'.format(rsp.status_code, rsp.request.method, rsp.url))
-        assert(rsp.status_code == 200), 'Got {} during {} {}'.format(rsp.status_code, rsp.request.method, rsp.url)
+        assert(rsp.status_code == 200 or rsp.status_code == 404), 'Got {} during {} {}'.format(
+            rsp.status_code, rsp.request.method, rsp.url
+        )
 
         return ret_func(rsp), rsp
 
@@ -41,25 +43,6 @@ fetchJson = lauchRequest(
     sleep_time=0
 )
 
-
-# def getSoup(url, sleep=0.1):
-#     time.sleep(sleep)
-#     rsp = session.get(url)
-
-#     logger.debug('return {} from {} {}'.format(rsp.status_code, rsp.request.method, rsp.url))
-#     assert(rsp.status_code == 200), 'Got {} during {} {}'.format(rsp.status_code, rsp.request.method, rsp.url)
-
-#     return BeautifulSoup(rsp.content, 'lxml'), rsp
-
-
-# def fetchJson(url, form, sleep=0):
-#     time.sleep(sleep)
-#     rsp = session.post(url, form)
-
-#     logger.debug('return {} from {} {}'.format(rsp.status_code, rsp.request.method, rsp.url))
-#     assert(rsp.status_code == 200), 'Got {} during {} {}'.format(rsp.status_code, rsp.request.method, rsp.url)
-
-#     return json.loads(rsp.text), rsp
 
 # utils
 
