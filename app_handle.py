@@ -15,7 +15,12 @@ def handlePost(blockid, postid):
     name = 'post-{}-{}'.format(blockid, postid)
     logger.info('Handling {}'.format(name))
 
-    bbsGlobal, post, replys = extractAll(blockid, postid)
+    ext = extractAll(blockid, postid)
+    if ext == None:
+        logger.info('Handling suspended with {}'.format(name))
+        return
+
+    bbsGlobal, post, replys = ext
     rewards = fetchRewardInfo(bbsGlobal)
 
     # persistant
