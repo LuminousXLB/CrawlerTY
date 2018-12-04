@@ -1,0 +1,27 @@
+{
+  "success": "1",
+  "message": "操作成功",
+  "data": {
+    "tyf": [
+      {
+        "upCount": 3,
+        "merNum": "poem-608790"
+      }
+    ],
+    "shang": [
+      {
+        "shang": 0,
+        "merNum": "poem-608790"
+      }
+    ],
+    "reward": [
+      {
+        "totalScore": 39.47,
+        "estimateValue": 39.47,
+        "merNum": "poem-608790",
+        "score": 0.0
+      }
+    ]
+  },
+  "code": "0"
+}

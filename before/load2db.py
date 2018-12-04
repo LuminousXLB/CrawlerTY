@@ -1,18 +1,10 @@
 from pathlib import Path
 import json
 from settings import DATA_ROOT
-from datetime import datetime
 from models import DB_ENGINE, posts, replys
 from utils import getLogger
 
 logger = getLogger('db')
-
-
-def parse_dt(text):
-    [ds, ts] = text.split(' ')
-    [Y, M, D] = ds.split('-')
-    [h, m, s] = ts.split(':')
-    return datetime(int(Y), int(M), int(D), int(h), int(m), int(s))
 
 
 def loadJson(path):
