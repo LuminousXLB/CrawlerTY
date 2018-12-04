@@ -1,39 +1,82 @@
 {
-  "blockid": "1179",
-  "postid": "54514",
-  "activityuserid": "135059315",
-  "posttime": "1539997793000",
-  "replycount": "3",
-  "clickcount": "25",
-  "length": 497,
-  "remarkcount": "3",
-  "imgcount": "1",
+  "blockid": "funinfo",
+  "pageurl": "http://bbs.tianya.cn/post-funinfo-7666773-1.shtml",
+  "postid": "7666773",
+  "activityuserid": "136532798",
+  "posttime": "2018-07-15 20:12:19",
+  "posttimestamp": "1531656739000",
+  "replycount": "14",
+  "clickcount": "1707",
+  "length": 178,
+  "remarkcount": "8",
+  "imgcount": "0",
+  "subType": "\u5927\u5bb6\u7206\u6599",
+  "upCount": 1,
+  "totalScore": 43.19,
   "replys": [
     {
-      "replyid": "1442894",
-      "hostid": "135059315",
-      "resttime": "2018-10-20 09:13:34",
-      "length": 292,
-      "upCount": 2,
-      "totalScore": 92.93
+      "replyid": "275776466",
+      "hostid": "101526884",
+      "resttime": "2018-07-15 20:41:45",
+      "length": 61,
+      "upCount": "",
+      "totalScore": ""
     },
     {
-      "replyid": "1442899",
-      "hostid": "135059315",
-      "resttime": "2018-10-20 09:13:53",
-      "length": 409,
-      "upCount": 2,
-      "totalScore": 92.93
+      "replyid": "275776594",
+      "hostid": "107090336",
+      "resttime": "2018-07-15 20:58:30",
+      "length": 61,
+      "upCount": "",
+      "totalScore": ""
     },
     {
-      "replyid": "1442960",
-      "hostid": "137089812",
-      "resttime": "2018-10-20 09:17:14",
-      "length": 42,
-      "upCount": 2,
-      "totalScore": 92.93
+      "replyid": "275776680",
+      "hostid": "115798159",
+      "resttime": "2018-07-15 21:09:15",
+      "length": 53,
+      "upCount": 1,
+      "totalScore": 43.19
+    },
+    {
+      "replyid": "275776704",
+      "hostid": "77944241",
+      "resttime": "2018-07-15 21:11:16",
+      "length": 55,
+      "upCount": "",
+      "totalScore": ""
+    },
+    {
+      "replyid": "275818012",
+      "hostid": "136532798",
+      "resttime": "2018-07-21 08:53:20",
+      "length": 112,
+      "upCount": "",
+      "totalScore": ""
+    },
+    {
+      "replyid": "276057387",
+      "hostid": "136532798",
+      "resttime": "2018-08-15 06:18:02",
+      "length": 58,
+      "upCount": "",
+      "totalScore": ""
+    },
+    {
+      "replyid": "276176120",
+      "hostid": "7645301",
+      "resttime": "2018-08-24 13:22:26",
+      "length": 52,
+      "upCount": "",
+      "totalScore": ""
+    },
+    {
+      "replyid": "276176276",
+      "hostid": "134718207",
+      "resttime": "2018-08-24 13:39:13",
+      "length": 41,
+      "upCount": "",
+      "totalScore": ""
     }
-  ],
-  "upCount": 4,
-  "totalScore": 108.33
+  ]
 }
