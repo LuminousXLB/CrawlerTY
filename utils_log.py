@@ -1,9 +1,10 @@
 import logging
+from settings import LOG_FILE
 
 logging.basicConfig(level=logging.DEBUG,
                     format='[%(asctime)s] %(levelname)-8s| %(name)s: %(message)s',
                     datefmt='%Y-%m-%d %H:%M:%S',
-                    filename='myapp.log',
+                    filename=str(LOG_FILE),
                     filemode='a')
 
 console = logging.StreamHandler()

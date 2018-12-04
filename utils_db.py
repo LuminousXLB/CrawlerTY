@@ -1,19 +1,12 @@
-from pathlib import Path
-
 from sqlalchemy import MetaData, bindparam, create_engine
 from sqlalchemy.schema import (Column, ForeignKeyConstraint,
                                PrimaryKeyConstraint, Table)
 from sqlalchemy.sql import and_, insert, update
 from sqlalchemy.types import DateTime, Float, Integer, String
 
+from settings import DB_ENGINE_FILE, ECHO_DATABASE_INFO
 from utils_log import getLogger
 
-# settings
-
-DATA_ROOT = Path('E:/data')
-DB_ENGINE_FILE = DATA_ROOT/'TYdata2.db'
-
-ECHO_DATABASE_INFO = True
 
 logger = getLogger('db')
 
