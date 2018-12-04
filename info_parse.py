@@ -29,8 +29,8 @@ def extractAll(blockid, postid):
         logger.info('Got subtype with {} in {}'.format(bbsGlobal['subType'], url))
         return None
 
-    post, masterReply = extractPost(soup, bbsGlobal)
-    replys = [masterReply] + extractReplys(soup, bbsGlobal, skip_first=True)
+    post, masterReply = extractPost(bbsGlobal, soup)
+    replys = [masterReply] + extractReplys(bbsGlobal, soup, skip_first=True)
 
     page = int(bbsGlobal['page'])
     pageCount = int(bbsGlobal['pageCount'])
@@ -43,7 +43,7 @@ def extractAll(blockid, postid):
             break
 
         bbsGlobal = extractBBSGlobal(soup)
-        replys += extractReplys(soup, bbsGlobal, skip_first=False)
+        replys += extractReplys(bbsGlobal, soup, skip_first=False)
         page = int(bbsGlobal['page'])
         pageCount = int(bbsGlobal['pageCount'])
 
@@ -105,7 +105,7 @@ def extractPost(bbsGlobal, soup):
 
     post_head = soup.find('div', id='post_head')
     post.update(parseAtlMenu(post_head.find('div', {'class': 'atl-menu'})))
-    post.update(parseAtlMenu(post_head.find('div', {'class': 'atl-info'})))
+    post.update(parseAtlInfo(post_head.find('div', {'class': 'atl-info'})))
 
     post['subType'] = bbsGlobal['subType']
 
@@ -172,7 +172,7 @@ def extractMasterReply(bbsGlobal, host_item, posttime):
 #     'upCount',    'shang',    'totalScore',   'score',    'estimateValue'
 # )
 
-def extractReplys(soup, bbsGlobal, skip_first=False):
+def extractReplys(bbsGlobal, soup, skip_first=False):
     atl_item_iter = iter(soup.findAll('div', {'class': 'atl-item'}))
     replys = []
 
@@ -180,10 +180,10 @@ def extractReplys(soup, bbsGlobal, skip_first=False):
         next(atl_item_iter)
 
     for atl_item in atl_item_iter:
-        replys.append({
+        replys.append(dict({
             'blockid': bbsGlobal['item'],
             'postid': bbsGlobal['artId']
-        }.update(parseReplyItem(atl_item)))
+        }, **parseReplyItem(atl_item)))
 
     return replys
 
@@ -194,9 +194,11 @@ def parseReplyItem(atl_item):
     for krly, katl in {
         'replyid': 'replyid',                                   # 回复id
         'hostid': '_hostid',                                    # 回复用户的id
-        'posttime': 'js_restime'                                # 回复时间
+        'posttime': 'js_restime'
     }.items():
         reply[krly] = atl_item.get(katl)
+
+    reply['posttime'] = parseDatetimeString(reply['posttime'])  # 回复时间
 
     content = atl_item.find('div', {'class': 'bbs-content'})
     reply['content'] = content.prettify()     # 回复内容

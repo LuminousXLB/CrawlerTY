@@ -58,52 +58,66 @@ metadata.create_all(DB_ENGINE)
 
 # utils
 
+
+class DB_Failed(BaseException):
+    pass
+
 # INSERT
 
 
 def inserts(connection, table, data_list):
-    if len(data_list) > 0:
-        return connection.execute(insert(table), data_list)
-    else:
-        return None
+    return connection.execute(insert(table), data_list)
 
 
 def insertPosts(connection, post_list):
-    return inserts(connection, posts, post_list)
+    try:
+        return inserts(connection, posts, post_list)
+    except:
+        raise DB_Failed(('insertPosts', post_list))
 
 
 def insertReplys(connection, reply_list):
-    return inserts(connection, replys, reply_list)
+    try:
+        return inserts(connection, replys, reply_list)
+    except:
+        raise DB_Failed(('insertReplys', reply_list))
+
 
 # UPDATE
 
 
 def updates(connection, stmt, data_list):
-    if len(data_list) > 0:
-        return connection.execute(stmt.where(and_(
-            replys.c.blockid == bindparam('blockid'),
-            replys.c.postid == bindparam('postid'),
-            replys.c.replyid == bindparam('replyid'),
-        )), data_list)
-    else:
-        return None
+    return connection.execute(stmt.where(and_(
+        replys.c.blockid == bindparam('blockid'),
+        replys.c.postid == bindparam('postid'),
+        replys.c.replyid == bindparam('replyid'),
+    )), data_list)
 
 
 def updateReward(connection, reward_list):
-    return updates(connection, update(replys).values(
-        totalScore=bindparam('totalScore'),
-        score=bindparam('score'),
-        estimateValue=bindparam('estimateValue')
-    ), reward_list)
+    try:
+        return updates(connection, update(replys).values(
+            totalScore=bindparam('totalScore'),
+            score=bindparam('score'),
+            estimateValue=bindparam('estimateValue')
+        ), reward_list)
+    except:
+        raise DB_Failed(('updateReward', reward_list))
 
 
 def updateTyf(connection, tyf_list):
-    return updates(connection, update(replys).values(
-        upCount=bindparam('upCount'),
-    ), tyf_list)
+    try:
+        return updates(connection, update(replys).values(
+            upCount=bindparam('upCount'),
+        ), tyf_list)
+    except:
+        raise DB_Failed(('updateTyf', tyf_list))
 
 
 def updateShang(connection, shang_list):
-    return updates(connection, update(replys).values(
-        shang=bindparam('shang'),
-    ), shang_list)
+    try:
+        return updates(connection, update(replys).values(
+            shang=bindparam('shang'),
+        ), shang_list)
+    except:
+        raise DB_Failed(('updateShang', shang_list))
