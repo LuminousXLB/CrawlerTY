@@ -166,14 +166,14 @@ def parseHostData(host_data):
 
 
 def extractMasterReply(bbsGlobal, host_item, posttime):
-    return Reply(
-        blockid=bbsGlobal['item'],
-        postid=bbsGlobal['artId'],
-        replyid=0,
-        hostid=host_item.get('_hostid'),
-        posttime=posttime,
-        content=host_item.find('div', {'class': 'bbs-content'}).prettify()
-    )
+    return {
+        'blockid': bbsGlobal['item'],
+        'postid': bbsGlobal['artId'],
+        'replyid': 0,
+        'hostid': host_item.get('_hostid'),
+        'posttime': posttime,
+        'content': host_item.find('div', {'class': 'bbs-content'}).prettify()
+    }
 
 
 # replys
