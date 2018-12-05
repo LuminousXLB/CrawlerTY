@@ -4,7 +4,7 @@ from urllib import parse
 
 import demjson
 
-from app_db import Post, Reply
+from app_db import Reply
 from utils_datetime import parseDatetimeString
 from utils_log import getLogger
 from utils_request import getSoup, with_max_retries
