@@ -35,6 +35,8 @@ def extractAll(blockid, postid):
     page = int(bbsGlobal['page'])
     pageCount = int(bbsGlobal['pageCount'])
 
+    MasterBBSGlobal = bbsGlobal
+
     while page < pageCount:
         url = urlFactory(blockid, postid, page+1)
         soup = getPage(url)
@@ -47,7 +49,7 @@ def extractAll(blockid, postid):
         page = int(bbsGlobal['page'])
         pageCount = int(bbsGlobal['pageCount'])
 
-    return bbsGlobal, post, replys
+    return MasterBBSGlobal, post, replys
 
 # utils
 
