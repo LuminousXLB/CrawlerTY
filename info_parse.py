@@ -31,8 +31,7 @@ def extractAll(blockid, postid):
         return None
 
     post, masterReply = extractPost(bbsGlobal, soup)
-    replys = set([masterReply])
-    replys.update(extractReplys(bbsGlobal, soup, skip_first=True))
+    replys = extractReplys(bbsGlobal, soup, skip_first=True)
 
     page = int(bbsGlobal['page'])
     pageCount = int(bbsGlobal['pageCount'])
@@ -51,7 +50,7 @@ def extractAll(blockid, postid):
         page = int(bbsGlobal['page'])
         pageCount = int(bbsGlobal['pageCount'])
 
-    return MasterBBSGlobal, post, [reply._asdict() for reply in replys]
+    return MasterBBSGlobal, post, [masterReply] + [reply._asdict() for reply in replys]
 
 # utils
 
