@@ -7,6 +7,7 @@ import demjson
 from utils_datetime import parseDatetimeString
 from utils_log import getLogger
 from utils_request import getSoup, with_max_retries
+from app_db import Post, Reply
 
 logger = getLogger('parser', logging.INFO)
 
@@ -30,7 +31,8 @@ def extractAll(blockid, postid):
         return None
 
     post, masterReply = extractPost(bbsGlobal, soup)
-    replys = [masterReply] + extractReplys(bbsGlobal, soup, skip_first=True)
+    replys = set([masterReply])
+    replys.update(extractReplys(bbsGlobal, soup, skip_first=True))
 
     page = int(bbsGlobal['page'])
     pageCount = int(bbsGlobal['pageCount'])
@@ -45,11 +47,11 @@ def extractAll(blockid, postid):
             break
 
         bbsGlobal = extractBBSGlobal(soup)
-        replys += extractReplys(bbsGlobal, soup, skip_first=False)
+        replys.update(extractReplys(bbsGlobal, soup, skip_first=False))
         page = int(bbsGlobal['page'])
         pageCount = int(bbsGlobal['pageCount'])
 
-    return MasterBBSGlobal, post, replys
+    return MasterBBSGlobal, Post(**post), list(replys)
 
 # utils
 
@@ -190,27 +192,13 @@ def extractReplys(bbsGlobal, soup, skip_first=False):
         next(atl_item_iter)
 
     for atl_item in atl_item_iter:
-        replys.append(dict({
-            'blockid': bbsGlobal['item'],
-            'postid': bbsGlobal['artId']
-        }, **parseReplyItem(atl_item)))
+        replys.append(Reply(
+            blockid=bbsGlobal['item'],
+            postid=bbsGlobal['artId'],
+            replyid=atl_item.get('replyid'),                                   # 回复id
+            hostid=atl_item.get('_hostid'),                                    # 回复用户的id
+            posttime=parseDatetimeString(atl_item.get('js_restime')),          # 回复时间
+            content=atl_item.find('div', {'class': 'bbs-content'}).prettify()  # 回复内容
+        ))
 
-    return replys
-
-
-def parseReplyItem(atl_item):
-    reply = {}
-
-    for krly, katl in {
-        'replyid': 'replyid',                                   # 回复id
-        'hostid': '_hostid',                                    # 回复用户的id
-        'posttime': 'js_restime'
-    }.items():
-        reply[krly] = atl_item.get(katl)
-
-    reply['posttime'] = parseDatetimeString(reply['posttime'])  # 回复时间
-
-    content = atl_item.find('div', {'class': 'bbs-content'})
-    reply['content'] = content.prettify()     # 回复内容
-
-    return reply
+    return set(replys)
