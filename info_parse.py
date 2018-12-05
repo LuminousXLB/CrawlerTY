@@ -4,10 +4,10 @@ from urllib import parse
 
 import demjson
 
+from app_db import Post, Reply
 from utils_datetime import parseDatetimeString
 from utils_log import getLogger
 from utils_request import getSoup, with_max_retries
-from app_db import Post, Reply
 
 logger = getLogger('parser', logging.INFO)
 
@@ -167,14 +167,14 @@ def parseHostData(host_data):
 
 
 def extractMasterReply(bbsGlobal, host_item, posttime):
-    return {
-        'blockid': bbsGlobal['item'],
-        'postid': bbsGlobal['artId'],
-        'replyid': 0,
-        'hostid': host_item.get('_hostid'),
-        'posttime': posttime,
-        'content': host_item.find('div', {'class': 'bbs-content'}).prettify()
-    }
+    return Reply(
+        blockid=bbsGlobal['item'],
+        postid=bbsGlobal['artId'],
+        replyid=0,
+        hostid=host_item.get('_hostid'),
+        posttime=posttime,
+        content=host_item.find('div', {'class': 'bbs-content'}).prettify()
+    )
 
 
 # replys
