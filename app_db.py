@@ -73,14 +73,14 @@ def insertPosts(connection, post_list):
     try:
         return inserts(connection, posts, post_list)
     except:
-        raise DB_Failed(('insertPosts', post_list))
+        raise # DB_Failed(('insertPosts', post_list))
 
 
 def insertReplys(connection, reply_list):
     try:
         return inserts(connection, replys, reply_list)
     except:
-        raise DB_Failed(('insertReplys', reply_list))
+        raise # DB_Failed(('insertReplys', reply_list))
 
 
 # UPDATE
@@ -102,7 +102,7 @@ def updateReward(connection, reward_list):
             estimateValue=bindparam('estimateValue')
         ), reward_list)
     except:
-        raise DB_Failed(('updateReward', reward_list))
+        raise # DB_Failed(('updateReward', reward_list))
 
 
 def updateTyf(connection, tyf_list):
@@ -111,7 +111,7 @@ def updateTyf(connection, tyf_list):
             upCount=bindparam('upCount'),
         ), tyf_list)
     except:
-        raise DB_Failed(('updateTyf', tyf_list))
+        raise # DB_Failed(('updateTyf', tyf_list))
 
 
 def updateShang(connection, shang_list):
@@ -120,4 +120,4 @@ def updateShang(connection, shang_list):
             shang=bindparam('shang'),
         ), shang_list)
     except:
-        raise DB_Failed(('updateShang', shang_list))
+        raise # DB_Failed(('updateShang', shang_list))
