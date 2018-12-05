@@ -9,7 +9,6 @@ POST_RANGE = [
 ]
 
 RUNTIME_RANGE = [
-    ('1179', 17884, 17884),
     ('1179', 20784, 33149),
     ('develop', 2303713, 2329332),
     ('free', 5935881, 5970215),
@@ -19,6 +18,8 @@ RUNTIME_RANGE = [
 
 
 if __name__ == "__main__":
+    handlePost('1179', 17884)
+
     for blockid, start, end in RUNTIME_RANGE:
         for postid in range(start, end+1):
             handlePost(blockid, postid)
