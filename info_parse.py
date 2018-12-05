@@ -60,17 +60,22 @@ def urlFactory(blockid, postid, page):
 
 @with_max_retries(3, 1)
 def getPage(url):
-    soup, rsp = getSoup(url)
+    try:
+        soup, rsp = getSoup(url)
+    except AssertionError as err:
+        if rsp.status_code == 500:
+            logger.critical('Return {} from {} {}'.format(rsp.status_code, rsp.request.method, rsp.url))
+            return None
+    else:
+        if rsp.status_code == 404:
+            logger.info('Return {} from {} {}'.format(rsp.status_code, rsp.request.method, rsp.url))
+            return None
 
-    if rsp.status_code == 404:
-        logger.info('Return {} from {} {}'.format(rsp.status_code, rsp.request.method, rsp.url))
-        return None
+        err = soup.find('div', {'id': 'main', 'class': 'error'})
+        if err:
+            raise FetchPostFailed((err.find('h2').text, rsp.url))
 
-    err = soup.find('div', {'id': 'main', 'class': 'error'})
-    if err:
-        raise FetchPostFailed((err.find('h2').text, rsp.url))
-
-    return soup
+        return soup
 
 
 # bbsGlobal
