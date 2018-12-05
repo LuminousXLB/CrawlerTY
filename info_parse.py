@@ -17,7 +17,7 @@ class FetchPostFailed(BaseException):
 
 # app
 
-
+@with_max_retries(3, 10)
 def extractAll(blockid, postid):
     url = urlFactory(blockid, postid, 1)
     soup = getPage(url)
