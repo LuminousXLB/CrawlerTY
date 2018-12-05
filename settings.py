@@ -1,7 +1,7 @@
 from pathlib import Path
 
 
-DATA_ROOT = Path('E:/RuntimeTY')
+DATA_ROOT = Path('RuntimeTY')
 
 DB_ENGINE_FILE = DATA_ROOT/'TYdata2.db'
 
