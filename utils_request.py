@@ -22,9 +22,6 @@ def lauchRequest(req_func, ret_func, sleep_time):
         rsp = req_func(*args)
 
         logger.debug('Return {} from {} {}'.format(rsp.status_code, rsp.request.method, rsp.url))
-        assert(rsp.status_code == 200 or rsp.status_code == 404), 'Got {} during {} {}'.format(
-            rsp.status_code, rsp.request.method, rsp.url
-        )
 
         return ret_func(rsp), rsp
 

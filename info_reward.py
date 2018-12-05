@@ -46,6 +46,10 @@ def fetchRewardInfo(bbsGlobal):
 def postReward(url, form):
     rjson, rsp = fetchJson('http://bbs.tianya.cn/api', form)
 
+    assert(rsp.status_code == 200), 'Got {} during {} {}'.format(
+        rsp.status_code, rsp.request.method, rsp.url
+    )
+
     if 'error_msg' in rjson:
         raise FetchRewardInfoFailed(('post', form, rjson))
 
