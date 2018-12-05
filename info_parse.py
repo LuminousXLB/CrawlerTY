@@ -51,7 +51,7 @@ def extractAll(blockid, postid):
         page = int(bbsGlobal['page'])
         pageCount = int(bbsGlobal['pageCount'])
 
-    return MasterBBSGlobal, Post(**post), list(replys)
+    return MasterBBSGlobal, post, [reply._asdict() for reply in replys]
 
 # utils
 
