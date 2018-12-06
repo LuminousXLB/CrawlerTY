@@ -14,7 +14,11 @@ logger = getLogger('handle', logging.INFO)
 
 def handlePost(blockid, postid):
     name = 'post-{}-{}'.format(blockid, postid)
-    post, replys, rewards, bbsGlobal = fetchinfo(blockid, postid, name)
+    info = fetchinfo(blockid, postid, name)
+    if info is None:
+        return
+
+    post, replys, rewards, bbsGlobal = info
     dumpinfo(post, replys, rewards, bbsGlobal, name)
 
 
@@ -23,7 +27,7 @@ def fetchinfo(blockid, postid, name):
     logger.info('Handling {}'.format(name))
 
     ext = extractAll(blockid, postid)
-    if ext == None:
+    if ext is None:
         logger.info('Handling suspended with {}'.format(name))
         return
 
