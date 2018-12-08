@@ -43,7 +43,7 @@ def getUpuser(merNum):
         rsp.status_code, rsp.request.method, rsp.url
     )
 
-    if not rjson.get('success'):
+    if not rjson.get('success') and rjson.get('code') != '-109':
         raise FetchUpuserInfoFailed(('post', merNum, rjson))
 
     return rjson, rsp
