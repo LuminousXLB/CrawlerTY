@@ -32,12 +32,15 @@ def fetchRewardInfo(bbsGlobal):
     rjson, _ = postReward('http://bbs.tianya.cn/api', form)
 
     ret = {}
+    merNumList = set()
 
     for key in ['tyf', 'shang', 'reward']:
         data = rjson['data'].get(key)
+
+        merNumList.update([item['merNum'] for item in data] if data else [])
         ret[key] = [splitMerNum(item) for item in data] if data else []
 
-    return ret
+    return ret, list(merNumList)
 
 # utils
 
@@ -50,7 +53,7 @@ def postReward(url, form):
         rsp.status_code, rsp.request.method, rsp.url
     )
 
-    if 'error_msg' in rjson:
+    if not rjson.get('success'):
         raise FetchRewardInfoFailed(('post', form, rjson))
 
     return rjson, rsp
@@ -62,7 +65,9 @@ def splitMerNum(item):
         lst += [0]
 
     if len(lst) == 3:
-        item['merNum'] = lst
+        item['pk_blockid'] = lst[0]
+        item['pk_postid'] = lst[1]
+        item['pk_replyid'] = lst[2]
         return item
     else:
         raise FetchRewardInfoFailed(('merNum', item))

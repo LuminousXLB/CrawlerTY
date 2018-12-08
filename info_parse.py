@@ -36,7 +36,7 @@ def extractAll(blockid, postid):
     page = int(bbsGlobal['page'])
     pageCount = int(bbsGlobal['pageCount'])
 
-    MasterBBSGlobal = bbsGlobal
+    GlobalList = [bbsGlobal]
 
     while page < pageCount:
         url = urlFactory(blockid, postid, page+1)
@@ -49,8 +49,9 @@ def extractAll(blockid, postid):
         replys.update(extractReplys(bbsGlobal, soup, skip_first=False))
         page = int(bbsGlobal['page'])
         pageCount = int(bbsGlobal['pageCount'])
+        GlobalList.append(bbsGlobal)
 
-    return MasterBBSGlobal, post, [masterReply] + [reply._asdict() for reply in replys]
+    return GlobalList, post, [masterReply] + [reply._asdict() for reply in replys]
 
 # utils
 

@@ -3,9 +3,9 @@ from pathlib import Path
 
 DATA_ROOT = Path('RuntimeTY')
 
-DB_ENGINE_FILE = DATA_ROOT/'TYdata2.db'
+DB_ENGINE_FILE = DATA_ROOT/'TYdata3.db'
 
-ECHO_DATABASE_INFO = False
+ECHO_DATABASE_INFO = True
 
 LOG_FILE = DATA_ROOT/'TYcrawler.log'
 

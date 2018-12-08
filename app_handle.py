@@ -4,10 +4,11 @@ import logging
 from info_parse import extractAll
 from info_reward import fetchRewardInfo
 from settings import DATA_ROOT
-from app_db import (DB_ENGINE, insertPosts, insertReplys, updateReward,
-                    updateShang, updateTyf)
+from app_db import (DB_ENGINE, insertPosts, insertReplys, insertUpusers, updateReward,
+                    updateShang, updateTyf, insertShangusers)
 from utils_log import getLogger
 from utils_request import with_max_retries
+from info_upuser import fetchUpuserInfo
 
 logger = getLogger('handle', logging.INFO)
 
@@ -18,8 +19,8 @@ def handlePost(blockid, postid):
     if info is None:
         return
 
-    post, replys, rewards, bbsGlobal = info
-    dumpinfo(post, replys, rewards, bbsGlobal, name)
+    post, replys, rewards, upUsers, shangUsers, GlobalList = info
+    dumpinfo(post, replys, rewards, upUsers, shangUsers, GlobalList, name)
 
 
 @with_max_retries(3, 60)
@@ -31,20 +32,37 @@ def fetchinfo(blockid, postid, name):
         logger.info('Handling suspended with {}'.format(name))
         return
 
-    bbsGlobal, post, replys = ext
-    rewards = fetchRewardInfo(bbsGlobal)
+    GlobalList, post, replys = ext
+    for bbsGlobal in GlobalList:
+        rewards, merNumList = fetchRewardInfo(bbsGlobal)
 
-    return post, replys, rewards, bbsGlobal
+    upUsers = fetchUpuserInfo(merNumList)
+
+    shangUsers = []
+
+    dashang = GlobalList[0].get('dashang')
+    if dashang is not None:
+        newestRecords = dashang.get('newestRecords')
+        if newestRecords is not None:
+            for record in newestRecords:
+                shangUsers.append({
+                    'blockid': blockid,
+                    'postid': postid,
+                    'doUserId': record['doUserId'],
+                    'shang': record['shang']
+                })
+
+    return post, replys, rewards, upUsers, shangUsers, GlobalList
 
 
-def dumpinfo(post, replys, rewards, bbsGlobal, name):
-    # dump bbsGlobal
+def dumpinfo(post, replys, rewards, upUsers, shangUsers, GlobalList, name):
+    # dump GlobalList
     fn = DATA_ROOT/'{}.json'.format(name)
 
     with open(str(fn), "w", encoding="utf-8") as f:
-        f.write(json.dumps(bbsGlobal, ensure_ascii=False))
+        f.write(json.dumps(GlobalList, ensure_ascii=False))
 
-    logger.info('Dump bbsGlobal {} success'.format(name))
+    logger.info('Dump GlobalList {} success'.format(name))
 
     # persistant
     with DB_ENGINE.connect() as connection:
@@ -60,6 +78,12 @@ def dumpinfo(post, replys, rewards, bbsGlobal, name):
 
             if len(rewards['reward']) > 0:
                 updateReward(connection, rewards['reward'])
+
+            if len(upUsers) > 0:
+                insertUpusers(connection, upUsers)
+
+            if len(shangUsers) > 0:
+                insertShangusers(connection, shangUsers)
 
             transcation.commit()
         except:

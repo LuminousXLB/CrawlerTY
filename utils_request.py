@@ -35,11 +35,16 @@ getSoup = lauchRequest(
 )
 
 fetchJson = lauchRequest(
-    lambda url, form: session.get(url),
+    lambda url, form: session.post(url, form),
     lambda rsp: json.loads(rsp.text),
     sleep_time=0
 )
 
+getJson = lauchRequest(
+    lambda url: session.get(url),
+    lambda rsp: json.loads(rsp.text),
+    sleep_time=0
+)
 
 # utils
 
