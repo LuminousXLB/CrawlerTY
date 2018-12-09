@@ -45,7 +45,7 @@ def fetchRewardInfo(bbsGlobal):
 # utils
 
 
-@with_max_retries(3, 0.5)
+@with_max_retries(3, 1)
 def postReward(url, form):
     rjson, rsp = fetchJson('http://bbs.tianya.cn/api', form)
 
