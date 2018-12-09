@@ -1,5 +1,9 @@
 from app_handle import handlePost
-from settings import RUNTIME_RANGE
+from settings import RUNTIME_RANGE, DATA_ROOT
+
+
+if not DATA_ROOT.is_dir():
+    DATA_ROOT.mkdir()
 
 
 if __name__ == "__main__":

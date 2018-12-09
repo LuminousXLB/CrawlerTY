@@ -8,7 +8,7 @@ logging.basicConfig(level=logging.DEBUG,
                     filemode='a')
 
 console = logging.StreamHandler()
-console.setLevel(logging.DEBUG)
+console.setLevel(logging.INFO)
 console.setFormatter(logging.Formatter(
     '[%(asctime)s] %(levelname)-8s| %(name)s: %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
