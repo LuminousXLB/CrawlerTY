@@ -1,5 +1,5 @@
 from sqlalchemy import MetaData, bindparam, create_engine
-from sqlalchemy.schema import (Column, ForeignKeyConstraint,
+from sqlalchemy.schema import (Column, ForeignKeyConstraint, ForeignKey, UniqueConstraint, Index,
                                PrimaryKeyConstraint, Table)
 from sqlalchemy.sql import and_, insert, update
 from sqlalchemy.types import DateTime, Float, Integer, String
@@ -20,6 +20,7 @@ metadata = MetaData()
 posts = Table(
     'posts',
     metadata,
+    Column('pid', Integer, autoincrement=True),
     Column('blockid', String, nullable=False, comment='板块id'),
     Column('postid', Integer, nullable=False, comment='帖子id'),
     Column('title', String, nullable=False, comment='帖子标题'),
@@ -31,15 +32,16 @@ posts = Table(
     Column('remarkcount', Integer, nullable=False, comment='楼主发言数'),
     Column('imgcount', Integer, nullable=False, comment='图片数'),
     Column('posttime', DateTime, nullable=False, comment='主贴发帖时间'),
-    PrimaryKeyConstraint('blockid', 'postid', name='post_pk')
+    PrimaryKeyConstraint('pid', name='post_pid'),
+    UniqueConstraint('blockid', 'postid', name='post_uix')
 )
 
 
 replys = Table(
     'replys',
     metadata,
-    Column('blockid', String, nullable=False, comment='板块id'),
-    Column('postid', Integer, nullable=False, comment='帖子id'),
+    Column('rid', Integer, autoincrement=True, primary_key=True),
+    Column('pid', Integer, ForeignKey('posts.pid')),
     Column('replyid', Integer, nullable=False, comment='回复id'),
     Column('hostid', Integer, nullable=False, comment='层主id'),
     Column('posttime', DateTime, nullable=False, comment='发布时间'),
@@ -49,37 +51,24 @@ replys = Table(
     Column('totalScore', Float, default=0, comment='总天涯分'),
     Column('score', Float, default=0, comment='已获天涯分'),
     Column('estimateValue', Float, default=0, comment='预估天涯分'),
-    PrimaryKeyConstraint('blockid', 'postid', 'replyid', name='reply_pk'),
-    ForeignKeyConstraint(['blockid', 'postid'], ['posts.blockid', 'posts.postid'], name="blockid_postid_fk")
+    UniqueConstraint('pid', 'replyid', name='reply_uix'),
 )
 
 
 upusers = Table(
     'upusers',
     metadata,
-    Column('blockid', String, nullable=False, comment='板块id'),
-    Column('postid', Integer, nullable=False, comment='帖子id'),
-    Column('replyid', Integer, nullable=False, comment='回复id'),
+    Column('rid', Integer, ForeignKey('replys.rid')),
     Column('doUserId', Integer, nullable=False, comment='点赞的人的id'),
-    ForeignKeyConstraint(
-        ['blockid', 'postid', 'replyid'],
-        ['replys.blockid', 'replys.postid', 'replys.replyid'],
-        name="blockid_postid_replyid_fk"
-    )
 )
 
 shangusers = Table(
     'shangusers',
     metadata,
-    Column('blockid', String, nullable=False, comment='板块id'),
-    Column('postid', Integer, nullable=False, comment='帖子id'),
+    Column('pid', Integer, ForeignKey('posts.pid')),
     Column('doUserId', Integer, nullable=False, comment='打赏的人的id'),
     Column('shang', Float, nullable=False, comment='打赏数额'),
-    ForeignKeyConstraint(
-        ['blockid', 'postid'],
-        ['posts.blockid', 'posts.postid'],
-        name="blockid_postid_fk"
-    )
+    Index('shangidx', 'pid', 'doUserId')
 )
 
 
