@@ -1,0 +1,3 @@
+function submit(rid, tendency) {
+
+}

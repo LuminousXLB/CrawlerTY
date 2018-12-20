@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+
+{% block body %}
+<div class="container">
+    {% for blockid, label in block_list %}
+    <a role="button" class="btn btn-outline-info btn-block btn-lg" href="{{ url_for('post_list', blockid=blockid) }}">{{ label }}</a>
+    {% endfor %}
+</div>
+{% endblock %}

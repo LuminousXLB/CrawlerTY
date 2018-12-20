@@ -2,7 +2,7 @@ from sqlalchemy import MetaData, bindparam, create_engine
 from sqlalchemy.schema import (Column, ForeignKeyConstraint, ForeignKey, UniqueConstraint, Index,
                                PrimaryKeyConstraint, Table)
 from sqlalchemy.sql import and_, insert, update
-from sqlalchemy.types import DateTime, Float, Integer, String
+from sqlalchemy.types import DateTime, Float, Integer, String, BLOB, Boolean
 
 from settings import DB_ENGINE_FILE, ECHO_DATABASE_INFO
 from utils_log import getLogger
@@ -13,7 +13,8 @@ logger = getLogger('db')
 # models
 
 
-DB_ENGINE = create_engine('sqlite:///{}'.format(DB_ENGINE_FILE), echo=ECHO_DATABASE_INFO)
+DB_ENGINE = create_engine(
+    'sqlite:///{}'.format(DB_ENGINE_FILE), echo=ECHO_DATABASE_INFO)
 
 metadata = MetaData()
 
@@ -71,6 +72,16 @@ shangusers = Table(
     Index('shangidx', 'pid', 'doUserId')
 )
 
+rawcontents = Table(
+    'rawcontents',
+    metadata,
+    Column('rid', Integer, ForeignKey('replys.rid'), primary_key=True),
+    Column('content', String, default="", comment='内容'),
+    Column('tag', Float, default=0.5, comment='水帖标记'),
+    Column('assure', Boolean),
+    Column('vector', BLOB, comment='人工确认'),
+    Column('predict', Float, default=0.5, comment='水帖标记'),
+)
 
 Post = namedtuple('Post', [
     'blockid',

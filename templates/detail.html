@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+
+{% block body %}
+<div class="container">
+    <div style="text-align: center;">
+        <h2>{{ post.title }}</h2>
+        <div>
+            点击数：<span>{{ post.clickcount }}</span> 回复数：<span>{{ post.replycount }}</span>
+        </div>
+        <div>
+            <a href="{{ post.pageurl }}" target="_blank">{{ post.pageurl }}</a>
+        </div>
+    </div>
+
+    <form action="/reply/{{ post.pid }}" method="POST" id="form" name="{{ post.pid }}" onsubmit="return onSubmit(this);">
+
+        {% for rid, hostid, posttime, content, upCount, shang, totalScore, tag in replys %}
+        <hr>
+
+        <div class="container">
+            <div class="card">
+                <div class="card-header" style="text-align: center">
+                    <div>
+                        {% if hostid == post.activityuserid %}
+                        <span class="badge badge-pill badge-primary">楼主</span>
+                        {% endif %}
+
+                        <span>{{ hostid }}</span> @ <span>{{ posttime }}</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {{ content | safe }}
+                </div>
+                <div class="card-footer text-muted">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-sm">
+                                <div class="row">
+                                    <div class="col-sm">点赞：{{ upCount }}</div>
+                                    <div class="col-sm">打赏：{{ shang }}</div>
+                                    <div class="col-sm">天涯分：{{ totalScore }}</div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm">
+                                <div class="float-right">
+                                    <!-- <fieldset> -->
+                                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                                        <label class="btn btn-secondary" for="{{ rid }}-T">
+                                            <input type="radio" name="{{ rid }}" id="{{ rid }}-T" value=1 checked> 水
+                                        </label>
+                                        <label class="btn btn-secondary" for="{{ rid }}-F">
+                                            <input type="radio" name="{{ rid }}" id="{{ rid }}-F" value=0> 不水
+                                        </label>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% endfor %}
+
+        <div class="container">
+            <div class="col m-3">
+                <div class="col-sm-4 mx-auto">
+                    <button type="submit" id="submit" class="btn btn-warning btn-block btn-lg">
+                        提交
+                    </button>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="modal" tabindex="-1" role="dialog" id="modal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">提交结果</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="return-message">Modal body text goes here.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <a row="button" class="btn btn-primary" href="{{ url_for('post_detail', pid=nextpid) }}">
+                            下一篇
+                        </a>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function onSubmit(form) {
+                $(form).ajaxSubmit(function (message) {
+                    $("#return-message").text(message);
+                    $("#modal").modal()
+                })
+                return false;
+            }
+            $(document).ready(function () {
+                {% for rid, hostid, posttime, content, upCount, shang, totalScore, tag in replys %}
+
+                {% if tag == None %}
+
+                $('#{{ rid }}-F').parent().addClass('active')
+                $('#{{ rid }}-F').prop('checked', true)
+
+                {% else %}
+
+                {% if tag > 0.8 %}
+                $('#{{ rid }}-T').parent().addClass('active')
+                $('#{{ rid }}-T').prop('checked', true)
+                {% elif tag < 0.2 %}
+                $('#{{ rid }}-F').parent().addClass('active')
+                $('#{{ rid }}-F').prop('checked', true)
+                {% endif %}
+
+                {% endif %}
+
+                {% endfor %}
+            })
+
+        </script>
+    </form>
+
+    <div class="container">
+        <hr>
+        <div class="d-flex justify-content-between align-items-center">
+            <a row="button" class="btn btn-link" href="{{ url_for('post_detail', pid=lastpid) }}">
+                上一篇
+            </a>
+
+            <a row="button" class="btn btn-link" href="{{ url_for('post_list', blockid=post.blockid) }}">
+                返回列表
+            </a>
+
+            <a row="button" class="btn btn-link" href="{{ url_for('post_detail', pid=nextpid) }}">
+                下一篇
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
