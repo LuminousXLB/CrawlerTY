@@ -13,7 +13,7 @@ logger = getLogger('predict')
 
 logger.info('Load the model')
 
-with open('SVC_rbf_model.bin', 'rb') as f:
+with open(DATA_ROOT/'SVC_rbf_model.bin', 'rb') as f:
     clf = pickle.load(f)
 
 

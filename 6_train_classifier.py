@@ -29,5 +29,5 @@ logger.info('Fitting...')
 
 clf.fit(X, y)
 
-with open('SVC_rbf_model.bin', 'wb') as f:
+with open(DATA_ROOT/'SVC_rbf_model.bin', 'wb') as f:
     pickle.dump(clf, f)
